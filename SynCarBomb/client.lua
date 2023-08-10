@@ -4,55 +4,23 @@ local readyforblowup = false
 
 
 
-
 function round(x)
     return x >= 0 and math.floor(x + 0.5) or math.ceil(x - 0.5)
 end
 
-local entityEnumerator = {
-    __gc = function(enum)
-        if enum.destructor and enum.handle then
-            enum.destructor(enum.handle)
-        end
-        enum.destructor = nil
-        enum.handle = nil
-    end
-}
-
-local function EnumerateEntities(initFunc, moveFunc, disposeFunc)
-    return coroutine.wrap(
-        function()
-            local iter, id = initFunc()
-            if not id or id == 0 then
-                disposeFunc(iter)
-                return
-            end
-
-            local enum = {handle = iter, destructor = disposeFunc}
-            setmetatable(enum, entityEnumerator)
-
-            local next = true
-            repeat
-                coroutine.yield(id)
-                next, id = moveFunc(iter)
-            until not next
-
-            enum.destructor, enum.handle = nil, nil
-            disposeFunc(iter)
-        end
-    )
-end
-
 function GetWorldVehicles()
-    return EnumerateEntities(FindFirstVehicle, FindNextVehicle, EndFindVehicle)
+    return GetGamePool('CVehicle') -- Get the list of vehicles (entities) from the pool
 end
 
 function LoadAnimDict( dict )
+    RequestAnimDict( dict )
     while ( not HasAnimDictLoaded( dict ) ) do
-        RequestAnimDict( dict )
         Citizen.Wait( 0 )
+        BreakCheck = BreakCheck +1
+        if BreakCheck > 100 then 
+            break 
+        end 
     end
-
 end
 
 function GetVehicleInDirection()
@@ -107,9 +75,7 @@ Citizen.CreateThread(function()
                 local carcoords = GetEntityCoords(vehicle2)
             if #(playercoords - carcoords) < 5 then 
                 showInfobar(Config.trackerplaced)
-        
-        
-            Citizen.InvokeNative(0xAD738C3085FE7E11,vehicle2,true,true)
+            SetEntityAsMissionEntity(vehicle2,true, true)
             TriggerEvent('SynVehicleBomb:trackerToggle', vehicle2)   
             else 
                 showInfobar(Config.trackenotplaced)
@@ -207,6 +173,8 @@ end)
 RegisterNetEvent('SynVehicleBomb:UseTheBurnerCarBombPhone')
 AddEventHandler('SynVehicleBomb:UseTheBurnerCarBombPhone', function(ServerCarPlate, ServerBombCode,CheckDatabase)
 --############################ UsetheBurnerPhone ############################--
+  
+
     for veh in GetWorldVehicles() do
         local plate = GetVehicleNumberPlateText(veh)
         if string.match(tostring(plate),tostring(ServerCarPlate))then
