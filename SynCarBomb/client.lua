@@ -13,6 +13,7 @@ function GetWorldVehicles()
 end
 
 function LoadAnimDict( dict )
+    BreakCheck = 0
     RequestAnimDict( dict )
     while ( not HasAnimDictLoaded( dict ) ) do
         Citizen.Wait( 0 )
