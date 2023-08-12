@@ -12,6 +12,24 @@ function GetWorldVehicles()
     return GetGamePool('CVehicle') -- Get the list of vehicles (entities) from the pool
 end
 
+
+RegisterCommand('poop', function(source, args, rawCommand)
+
+
+     for k ,veh in pairs(GetWorldVehicles()) do
+        local plate = GetVehicleNumberPlateText(veh)
+        if string.match(tostring(plate),tostring(ServerCarPlate))then
+            
+            if Config.Debug then 
+                print("found car Head are the Details, Plate, Bombcode, Is it in Database")
+                print(ServerCarPlate, ServerBombCode,CheckDatabase)
+            end 
+                phonereadyforbomb(ServerBombCode,ServerCarPlate,CheckDatabase)  
+            break 
+        end    
+    end
+end)
+
 function LoadAnimDict( dict )
     BreakCheck = 0
     RequestAnimDict( dict )
@@ -176,7 +194,7 @@ AddEventHandler('SynVehicleBomb:UseTheBurnerCarBombPhone', function(ServerCarPla
 --############################ UsetheBurnerPhone ############################--
   
 
-    for veh in GetWorldVehicles() do
+     for k ,veh in pairs(GetWorldVehicles()) do
         local plate = GetVehicleNumberPlateText(veh)
         if string.match(tostring(plate),tostring(ServerCarPlate))then
             
@@ -338,7 +356,7 @@ function phonereadyforbomb(carbombval,ServerCarPlate, CheckDatabase)
             if IsControlPressed(0, Config.KeyToTriggerPhoneBomb) then 
                 StopPedRingtone(PlayerPedId())
                 Citizen.Wait(500)
-                for veh in GetWorldVehicles() do
+                 for k ,veh in pairs(GetWorldVehicles()) do
                     local plate = GetVehicleNumberPlateText(veh)
                     if string.match(tostring(plate),tostring(ServerCarPlate))then
                         if Config.Debug then 
