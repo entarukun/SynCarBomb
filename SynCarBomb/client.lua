@@ -13,23 +13,6 @@ function GetWorldVehicles()
 end
 
 
-RegisterCommand('poop', function(source, args, rawCommand)
-
-
-     for k ,veh in pairs(GetWorldVehicles()) do
-        local plate = GetVehicleNumberPlateText(veh)
-        if string.match(tostring(plate),tostring(ServerCarPlate))then
-            
-            if Config.Debug then 
-                print("found car Head are the Details, Plate, Bombcode, Is it in Database")
-                print(ServerCarPlate, ServerBombCode,CheckDatabase)
-            end 
-                phonereadyforbomb(ServerBombCode,ServerCarPlate,CheckDatabase)  
-            break 
-        end    
-    end
-end)
-
 function LoadAnimDict( dict )
     BreakCheck = 0
     RequestAnimDict( dict )
